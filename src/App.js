@@ -1,25 +1,27 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+
+import RouterContainer from "./components/allRoute/RouteContainer";
+import SignIn from "./components/signInLoginPage/SignIn";
+import * as firebase from "firebase";
+import "./firebase";
+
+import "./App.css";
 
 function App() {
+  const [uservalue, setUser] = useState(null);
+  const [databaseId, setDataBaseId] = useState("");
+
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      setDataBaseId(user.uid);
+      setUser(user);
+    } else {
+      setUser(null);
+    }
+  });
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>{uservalue ? <RouterContainer databaseId={databaseId} /> : <SignIn />}</>
   );
 }
 
