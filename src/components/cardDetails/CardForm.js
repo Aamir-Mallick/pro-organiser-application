@@ -4,43 +4,74 @@ import * as firebase from "firebase";
 import "../../firebase";
 
 function CardForm(props) {
-  const [inputValue, setInputValue] = useState({
-    task: "",
-    member: "",
-    description: "",
-  });
+  const [upDateTask, setUpDatetask] = useState("");
+  const [upDateMember, setUpDateMember] = useState("");
+  const [upDateDescription, setUpDateDescription] = useState("");
+  const [task, setTask] = useState("hello");
+  const [member, setMember] = useState("" || upDateMember);
+  const [description, setDescription] = useState("" || upDateDescription);
 
   const [mainNode, setMainNode] = useState("");
   const [firstChildNode, setFirstChildNode] = useState("");
   const [secondChildNode, setSecontChildNode] = useState("");
+  const [secondChildNodeEdit, setSecontChildNodeEdit] = useState("");
+  const [thirdChildNode, setThirdChildNode] = useState("");
 
   useEffect(() => {
     setMainNode(props.mainNode);
     setFirstChildNode(props.firstChildNode);
     setSecontChildNode(props.secondChildNode);
-  }, [props.mainNode, props.firstChildNode, props.secondChildNode]);
+    setSecontChildNodeEdit(props.secondChildNodeEdit);
+    setThirdChildNode(props.thirdChildNode);
 
-  const clickHandler = (e) => {
+    getDataForUpdate([upDateTask]);
+  }, [
+    props.mainNode,
+    props.firstChildNode,
+    props.secondChildNode,
+    props.secondChildNodeEdit,
+    props.thirdChildNode,
+  ]);
+
+  const getDataForUpdate = (e) => {
     firebase
       .database()
-      .ref(`${mainNode}/${firstChildNode}/${secondChildNode}`)
-      .push(inputValue);
-    props.popUpCard();
+      .ref(
+        `${props.mainNode}/${props.firstChildNode}/${props.secondChildNodeEdit}/${props.thirdChildNode}`
+      )
+      .once("value")
+      .then((snapShot) => {
+        setUpDatetask(snapShot.val().task);
+      });
   };
 
-  const onChangeHandler = (e) => {
-    setInputValue({
-      ...inputValue,
-      [e.target.name]: e.target.value,
-    });
+  const taskChangeHandler = (e) => {
+    setTask(e.target.value);
+  };
+
+  const memberChangeHandler = (e) => {
+    setMember(e.target.value);
+  };
+
+  const descriptionChangeHandler = (e) => {
+    setDescription(e.target.value);
   };
 
   const onSubmitValue = () => {
-    clickHandler();
+    firebase
+      .database()
+      .ref(`${mainNode}/${firstChildNode}/${secondChildNode}`)
+      .push({
+        task: task,
+        member: member,
+        description: description,
+      });
+    props.popUpCard();
   };
 
   return (
     <>
+      {console.log(task)}
       <div className="card_form_main_container">
         <div className="card_form_inner_container">
           <h2>Add card</h2>
@@ -49,9 +80,9 @@ function CardForm(props) {
           <input
             type="text"
             name="task"
-            value={inputValue.task}
+            value={task}
             onChange={(e) => {
-              onChangeHandler(e);
+              taskChangeHandler(e);
             }}
           />
           <br />
@@ -60,9 +91,9 @@ function CardForm(props) {
           <input
             type="text"
             name="member"
-            value={inputValue.member}
+            value={member}
             onChange={(e) => {
-              onChangeHandler(e);
+              memberChangeHandler(e);
             }}
           />
           <br />
@@ -71,9 +102,9 @@ function CardForm(props) {
           <input
             type="text"
             name="description"
-            value={inputValue.description}
+            value={description}
             onChange={(e) => {
-              onChangeHandler(e);
+              descriptionChangeHandler(e);
             }}
           />
           <br />

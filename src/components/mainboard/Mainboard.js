@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "./mainBoardStyle.css";
 import Column from "../common/Column";
 import CardForm from "../cardDetails/CardForm";
+import CardPopUpDetails from "../cardPopUpDetails/CardPopUpDetails";
 import * as firebase from "firebase";
 import "../../firebase";
 
@@ -13,6 +14,10 @@ function Mainboard(props) {
   const [secondChildNode, setSecontChildNode] = useState("");
   const [arrayColumn, setArrayColumn] = useState([]);
   const [cardPopUp, setCardPopUp] = useState(false);
+  const [showCardDetails, setShowCardDetails] = useState(null);
+  const [cardDetilsModal, setShowCardDetailModal] = useState(false);
+  const [secondChildNodeEdit, setSecontChildNodeEdit] = useState("");
+  const [thirdChildNode, setThirdChildNode] = useState("");
 
   const params = useParams();
 
@@ -36,7 +41,7 @@ function Mainboard(props) {
             items.key !== "teamMember"
           ) {
             setArrayColumn((arrayColumn) => {
-              return [...arrayColumn, { id: items.key, ...items.val() }];
+              return [...arrayColumn, { id: items.key, myId: items.val() }];
             });
           }
         });
@@ -45,17 +50,48 @@ function Mainboard(props) {
 
   const onClickHandler = () => {
     setAddColumn(!addColumn);
+    addValue();
   };
 
   const onClickCardHandler = (e, id) => {
     setSecontChildNode(id);
-    setCardPopUp(!cardPopUp);
+    setCardPopUp(true);
+  };
+
+  const editHandler = (a, b) => {
+    setSecontChildNodeEdit(a);
+    setThirdChildNode(b);
+    setCardPopUp(true);
+  };
+
+  const onCloseCard = () => {
+    setCardPopUp(false);
+  };
+
+  const taskHandler = (columnId, cardId) => {
+    firebase
+      .database()
+      .ref(`${props.id}/${params.uid}/${columnId}/${cardId}`)
+      .once("value")
+      .then((data) => {
+        setShowCardDetails(data.val());
+      })
+      .then(() => {
+        setShowCardDetailModal(true);
+      });
+  };
+
+  const closePopUpcardDetails = () => {
+    setShowCardDetailModal(false);
+  };
+
+  const deleteCardHandler = (v1, v2) => {
+    firebase.database().ref(`${props.id}/${params.uid}/${v1}/${v2}`).remove();
+    addValue();
   };
 
   return (
     <>
-      {console.log(secondChildNode)}
-      {console.log(arrayColumn)}
       <div className="board_heading">
         <div className="board_heading_text">{params.name}</div>
         <div className="board_delete_button">
@@ -68,7 +104,7 @@ function Mainboard(props) {
           {arrayColumn.map((x) => {
             return (
               <div key={x.id} className="main_board_inner_column_container">
-                <span>{x.columnName}</span>
+                <span>{x.myId.columnName}</span>
                 <button>delete</button> <br />
                 <button
                   onClick={(e) => {
@@ -77,6 +113,49 @@ function Mainboard(props) {
                 >
                   add card
                 </button>
+                {arrayColumn
+                  .filter((items) => {
+                    return items.id === x.id;
+                  })
+                  .map((taskObject, index) => {
+                    const myIdValue = taskObject.myId;
+                    const tasksArray = Object.entries(myIdValue);
+                    const taskDisc = tasksArray.map((task) => {
+                      const [id, taskDetails] = task;
+
+                      if (!taskDetails.task) {
+                        return null;
+                      }
+
+                      return (
+                        <div key={id}>
+                          <span
+                            onClick={() => {
+                              taskHandler(x.id, id);
+                            }}
+                          >
+                            {taskDetails.task}
+                          </span>
+                          <button
+                            onClick={() => {
+                              editHandler(x.id, id);
+                            }}
+                          >
+                            edit
+                          </button>
+                          <button
+                            onClick={() => {
+                              deleteCardHandler(x.id, id);
+                            }}
+                          >
+                            delete
+                          </button>
+                        </div>
+                      );
+                    });
+
+                    return <div key={index}>{taskDisc}</div>;
+                  })}
               </div>
             );
           })}
@@ -107,11 +186,22 @@ function Mainboard(props) {
       {cardPopUp ? (
         <CardForm
           popUpCard={() => {
-            onClickCardHandler();
+            onCloseCard();
           }}
           mainNode={mainNode}
           firstChildNode={firstChildNode}
           secondChildNode={secondChildNode}
+          secondChildNodeEdit={secondChildNodeEdit}
+          thirdChildNode={thirdChildNode}
+        />
+      ) : null}
+
+      {cardDetilsModal ? (
+        <CardPopUpDetails
+          cardData={showCardDetails}
+          closePopUp={() => {
+            closePopUpcardDetails();
+          }}
         />
       ) : null}
     </>

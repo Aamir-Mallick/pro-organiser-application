@@ -52,7 +52,14 @@ function Homepage(props) {
           );
         })}
       </div>
+      {boardData.length ? null : (
+        <p>
+          please cleate board by clicking on createboard on the top right corner
+        </p>
+      )}
       <input type="button" onClick={logOut} value="signOut" />
+
+      {console.log(boardData)}
     </>
   );
 }
