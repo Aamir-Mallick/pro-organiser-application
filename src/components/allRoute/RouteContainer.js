@@ -4,7 +4,7 @@ import Main from "../MainContainer/Main";
 function RouteContainer(props) {
   return (
     <>
-      <Main id={props.databaseId} />
+      <Main id={props.databaseId} displayName={props.displayName} />
     </>
   );
 }

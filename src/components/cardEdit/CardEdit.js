@@ -1,14 +1,51 @@
 import React, { useState, useEffect } from "react";
-import "./cardFormStyles.css";
+import "./cardEditStyle.css";
 import * as firebase from "firebase";
 import "../../firebase";
 
-function CardForm(props) {
+function CardEdit(props) {
+  const [upDatedInpuValues, setUpDatedInputValues] = useState({
+    task: "",
+    member: "",
+    description: "",
+  });
   const [inputValues, setInputValue] = useState({
     task: "",
     member: "",
     description: "",
   });
+
+  useEffect(() => {
+    getDataForUpdate();
+  }, [
+    upDatedInpuValues.task,
+    upDatedInpuValues.member,
+    upDatedInpuValues.description,
+  ]);
+
+  const getDataForUpdate = (e) => {
+    firebase
+      .database()
+      .ref(
+        `${props.mainNode}/${props.firstChildNode}/${props.secondChildNodeEdit}/${props.thirdChildNode}`
+      )
+      .once("value")
+      .then((snapShot) => {
+        setUpDatedInputValues({
+          task: snapShot.val().task,
+          member: snapShot.val().member,
+          description: snapShot.val().description,
+        });
+      })
+      .then(() => {
+        setInputValue({
+          ...inputValues,
+          task: upDatedInpuValues.task,
+          member: upDatedInpuValues.member,
+          description: upDatedInpuValues.description,
+        });
+      });
+  };
 
   const ChangeHandler = (e) => {
     setInputValue({
@@ -20,8 +57,10 @@ function CardForm(props) {
   const onSubmitValue = () => {
     firebase
       .database()
-      .ref(`${props.mainNode}/${props.firstChildNode}/${props.secondChildNode}`)
-      .push(inputValues);
+      .ref(
+        `${props.mainNode}/${props.firstChildNode}/${props.secondChildNodeEdit}/${props.thirdChildNode}`
+      )
+      .set(inputValues);
     props.popUpCard();
   };
 
@@ -31,12 +70,12 @@ function CardForm(props) {
 
   return (
     <>
-      <div className="card_form_main_container">
-        <div className="card_form_inner_container">
+      <div className="card_edit_main_container">
+        <div className="card_edit_inner_container">
           <button className="" onClick={popUpClose}>
             X
           </button>
-          <h2>Add card</h2>
+          <h2>Update Card</h2>
           <label>Enter a title for your task</label>
           <br />
           <input
@@ -74,7 +113,7 @@ function CardForm(props) {
           <br />
           <input
             type="button"
-            value="Add Card"
+            value="Update Card"
             onClick={() => {
               onSubmitValue();
             }}
@@ -85,4 +124,4 @@ function CardForm(props) {
   );
 }
 
-export default CardForm;
+export default CardEdit;

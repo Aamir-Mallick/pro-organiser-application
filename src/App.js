@@ -10,10 +10,12 @@ import "./App.css";
 function App() {
   const [uservalue, setUser] = useState(null);
   const [databaseId, setDataBaseId] = useState("");
+  const [displayName, setDisplayName] = useState("");
 
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
       setDataBaseId(user.uid);
+      setDisplayName(user.displayName);
       setUser(user);
     } else {
       setUser(null);
@@ -21,7 +23,13 @@ function App() {
   });
 
   return (
-    <>{uservalue ? <RouterContainer databaseId={databaseId} /> : <SignIn />}</>
+    <>
+      {uservalue ? (
+        <RouterContainer databaseId={databaseId} displayName={displayName} />
+      ) : (
+        <SignIn />
+      )}
+    </>
   );
 }
 

@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import "./mainBoardStyle.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCoffee,
+  faTrash,
+  faEdit,
+  faList,
+} from "@fortawesome/free-solid-svg-icons";
 import Column from "../common/Column";
 import CardForm from "../cardDetails/CardForm";
+import CardEdit from "../cardEdit/CardEdit";
 import CardPopUpDetails from "../cardPopUpDetails/CardPopUpDetails";
 import * as firebase from "firebase";
 import "../../firebase";
@@ -18,8 +26,10 @@ function Mainboard(props) {
   const [cardDetilsModal, setShowCardDetailModal] = useState(false);
   const [secondChildNodeEdit, setSecontChildNodeEdit] = useState("");
   const [thirdChildNode, setThirdChildNode] = useState("");
+  const [cardEditPopUp, setCardEditPopUp] = useState(false);
 
   const params = useParams();
+  const history = useHistory();
 
   useEffect(() => {
     setMainNode(props.id);
@@ -61,11 +71,15 @@ function Mainboard(props) {
   const editHandler = (a, b) => {
     setSecontChildNodeEdit(a);
     setThirdChildNode(b);
-    setCardPopUp(true);
+    setCardEditPopUp(true);
   };
 
   const onCloseCard = () => {
     setCardPopUp(false);
+  };
+
+  const onCloseEditCard = () => {
+    setCardEditPopUp(false);
   };
 
   const taskHandler = (columnId, cardId) => {
@@ -90,12 +104,24 @@ function Mainboard(props) {
     addValue();
   };
 
+  const deleteHandler = (z) => {
+    firebase.database().ref(`${props.id}/${params.uid}/${z}`).remove();
+    addValue();
+  };
+
+  const deleteBoardHandler = () => {
+    firebase.database().ref(`${props.id}/${params.uid}`).remove();
+    history.push("/");
+  };
+
   return (
     <>
       <div className="board_heading">
         <div className="board_heading_text">{params.name}</div>
         <div className="board_delete_button">
-          <button className="delete_button">Delete Board</button>
+          <button className="delete_button" onClick={deleteBoardHandler}>
+            Delete Board
+          </button>
         </div>
       </div>
       {/*login for the coloumn starting here */}
@@ -104,15 +130,36 @@ function Mainboard(props) {
           {arrayColumn.map((x) => {
             return (
               <div key={x.id} className="main_board_inner_column_container">
-                <span>{x.myId.columnName}</span>
-                <button>delete</button> <br />
+                <div className="main_board_heading_container">
+                  <div>
+                    <span>{x.myId.columnName}</span>
+                  </div>
+                  <div>
+                    <button
+                      style={{ border: "none", cursor: "active" }}
+                      onClick={() => {
+                        deleteHandler(x.id);
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faTrash} color="red" />
+                    </button>
+                  </div>
+                </div>
+                <br />
                 <button
+                  style={{
+                    width: "199px",
+                    height: "30px",
+                    backgroundColor: "blue",
+                    color: "white",
+                  }}
                   onClick={(e) => {
                     onClickCardHandler(e, x.id);
                   }}
                 >
                   add card
                 </button>
+                <br />
                 {arrayColumn
                   .filter((items) => {
                     return items.id === x.id;
@@ -128,28 +175,32 @@ function Mainboard(props) {
                       }
 
                       return (
-                        <div key={id}>
-                          <span
+                        <div key={id} className="main_board_headline_of_card">
+                          <div
+                            className="main_board_headline_of_card_text"
                             onClick={() => {
                               taskHandler(x.id, id);
                             }}
                           >
+                            <FontAwesomeIcon icon={faList} />
                             {taskDetails.task}
-                          </span>
-                          <button
-                            onClick={() => {
-                              editHandler(x.id, id);
-                            }}
-                          >
-                            edit
-                          </button>
-                          <button
-                            onClick={() => {
-                              deleteCardHandler(x.id, id);
-                            }}
-                          >
-                            delete
-                          </button>
+                          </div>
+                          <div>
+                            <button
+                              onClick={() => {
+                                editHandler(x.id, id);
+                              }}
+                            >
+                              <FontAwesomeIcon icon={faEdit} />
+                            </button>
+                            <button
+                              onClick={() => {
+                                deleteCardHandler(x.id, id);
+                              }}
+                            >
+                              <FontAwesomeIcon icon={faTrash} color="red" />
+                            </button>
+                          </div>
                         </div>
                       );
                     });
@@ -187,6 +238,21 @@ function Mainboard(props) {
         <CardForm
           popUpCard={() => {
             onCloseCard();
+            addValue();
+          }}
+          mainNode={mainNode}
+          firstChildNode={firstChildNode}
+          secondChildNode={secondChildNode}
+          secondChildNodeEdit={secondChildNodeEdit}
+          thirdChildNode={thirdChildNode}
+        />
+      ) : null}
+
+      {cardEditPopUp ? (
+        <CardEdit
+          popUpCard={() => {
+            onCloseEditCard();
+            addValue();
           }}
           mainNode={mainNode}
           firstChildNode={firstChildNode}

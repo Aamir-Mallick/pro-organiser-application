@@ -1,6 +1,6 @@
 .form_nain_container {
-  width: 400px;
-  border: 1px solid blue;
+  width: 320px;
+  box-shadow: 0px 0px 4px 4px #cdced0;
   margin: 40px auto;
 }
 
@@ -11,5 +11,21 @@
 #name,
 #type,
 #team {
-  width: 390px;
+  width: 305px;
+  border: 1px solid #96b4f1;
+  border-radius: 4px;
+  margin-left: 2px;
+}
+
+#CreateBoard {
+  background-color: #2064ed;
+  width: 130px;
+  height: 30px;
+  border: 1px solid #2064ed;
+  margin-bottom: 2px;
+  margin-left: 90px;
+  cursor: pointer;
+}
+#CreateBoard:hover {
+  background-color: #105aee;
 }

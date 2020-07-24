@@ -1,14 +1,33 @@
 .home_page_nain_container {
   display: flex;
-  border: 1px solid black;
 }
 
 .home_page_inner_container {
   width: 200px;
   height: 130px;
-  border: 1px solid green;
   text-align: center;
   line-height: 120px;
   margin: 20px 10px 20px 10px;
   text-decoration-line: none;
+  background-color: #96b4f1;
+  box-shadow: 0px 0px 4px 4px #d3d6da;
+  font-family: sans-serif;
+  cursor: pointer;
+}
+.home_page_inner_container:hover {
+  background-color: #3573f0;
+}
+
+.btnSignIn {
+  margin-top: 10px;
+  width: 130px;
+  height: 30px;
+  background-color: #96b4f1;
+  cursor: pointer;
+  margin-left: 10px;
+  border: 1px solid #96b4f1;
+}
+
+.btnSignIn:hover {
+  background-color: #3573f0;
 }

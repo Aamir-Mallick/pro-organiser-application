@@ -36,6 +36,15 @@ function Homepage(props) {
 
   return (
     <>
+      <div>
+        <div></div>
+        <input
+          type="button"
+          onClick={logOut}
+          value="signOut"
+          className="btnSignIn"
+        />
+      </div>
       <div className="home_page_nain_container">
         {boardData.map((items) => {
           return (
@@ -57,9 +66,6 @@ function Homepage(props) {
           please cleate board by clicking on createboard on the top right corner
         </p>
       )}
-      <input type="button" onClick={logOut} value="signOut" />
-
-      {console.log(boardData)}
     </>
   );
 }
