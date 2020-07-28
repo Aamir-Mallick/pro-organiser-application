@@ -9,6 +9,10 @@
 }
 .delete_button {
   background-color: red;
+  cursor: pointer;
+}
+.delete_button:hover {
+  background-color: #c61414;
 }
 
 .main_board_container {
@@ -28,6 +32,7 @@
   border: 1px dotted black;
   text-align: center;
   line-height: 200px;
+  cursor: pointer;
 }
 
 .main_board_column_container {
@@ -62,4 +67,9 @@
   flex: auto;
   height: 25px;
   border-radius: 4px;
+  cursor: pointer;
+}
+
+.main_board_headline_of_card_text:hover {
+  background-color: #a2a6b0;
 }

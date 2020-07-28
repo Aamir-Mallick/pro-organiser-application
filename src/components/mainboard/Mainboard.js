@@ -136,7 +136,7 @@ function Mainboard(props) {
                   </div>
                   <div>
                     <button
-                      style={{ border: "none", cursor: "active" }}
+                      style={{ border: "none", cursor: "pointer" }}
                       onClick={() => {
                         deleteHandler(x.id);
                       }}
@@ -152,6 +152,7 @@ function Mainboard(props) {
                     height: "30px",
                     backgroundColor: "blue",
                     color: "white",
+                    cursor: "pointer",
                   }}
                   onClick={(e) => {
                     onClickCardHandler(e, x.id);
@@ -190,6 +191,7 @@ function Mainboard(props) {
                               onClick={() => {
                                 editHandler(x.id, id);
                               }}
+                              style={{ cursor: "pointer" }}
                             >
                               <FontAwesomeIcon icon={faEdit} />
                             </button>
@@ -197,6 +199,7 @@ function Mainboard(props) {
                               onClick={() => {
                                 deleteCardHandler(x.id, id);
                               }}
+                              style={{ cursor: "pointer" }}
                             >
                               <FontAwesomeIcon icon={faTrash} color="red" />
                             </button>

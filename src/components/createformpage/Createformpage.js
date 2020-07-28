@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import "./createFormPageStyle.css";
 import * as firebase from "firebase";
+import { useHistory } from "react-router-dom";
 import "../../firebase";
 
 function Createformpage(props) {
+  const usehistory = useHistory();
+
   const [board, setBoard] = useState({
     boardName: "",
     teamMember: "",
@@ -18,7 +21,13 @@ function Createformpage(props) {
   };
 
   const onclickHandler = (myval) => {
-    firebase.database().ref(props.id).push(myval);
+    firebase
+      .database()
+      .ref(props.id)
+      .push(myval)
+      .then(() => {
+        usehistory.push("/");
+      });
   };
 
   return (

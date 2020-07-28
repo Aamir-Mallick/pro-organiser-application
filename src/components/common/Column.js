@@ -22,9 +22,15 @@ function Column(props) {
   };
 
   const addColumnToDatabase = () => {
-    firebase.database().ref(`/${mainNode}/${firstChildNode}`).push({
-      columnName: columnName,
-    });
+    firebase
+      .database()
+      .ref(`/${mainNode}/${firstChildNode}`)
+      .push({
+        columnName: columnName,
+      })
+      .then(() => {
+        props.popupToggle();
+      });
   };
   return (
     <>
